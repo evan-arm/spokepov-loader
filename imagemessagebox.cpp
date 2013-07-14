@@ -1,6 +1,8 @@
+#include <wx/dialog.h>
 #include <wx/sizer.h>
 #include <wx/statbmp.h>
 #include <wx/stattext.h>
+#include <wx/toplevel.h>
 #include "imagemessagebox.h"
 
 BEGIN_EVENT_TABLE(ImageMessageBox, wxDialog )

@@ -1,3 +1,5 @@
+#include <wx/string.h>
+#include <wx/button.h>
 #include <wx/frame.h>
 #include <wx/log.h>
 #include <wx/debug.h>
@@ -11,6 +13,7 @@
 #include <wx/image.h>
 #include <wx/sizer.h>
 #include <wx/stattext.h>
+#include <wx/wxchar.h>
 #include <wx/msgdlg.h>
 #include <wx/button.h>
 #include "wheelpanel.h"

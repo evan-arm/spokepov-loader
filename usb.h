@@ -2,7 +2,6 @@
 #define __USB_H__
 
 #include <stdlib.h>
-#include <windows.h>
 
 /* 
  * 'interface' is defined somewhere in the Windows header files. This macro 
@@ -67,7 +66,9 @@
 
 
 /* ensure byte-packed structures */
+#if defined (WIN32NATIVE)
 #include <pshpack1.h> 
+#endif
 
 
 /* All standard descriptors have these 2 fields in common */
@@ -290,8 +291,9 @@ typedef struct usb_dev_handle usb_dev_handle;
 #endif
 
 
-
+#if defined (WIN32NATIVE)
 #include <poppack.h>
+#endif
 
 
 #ifdef __cplusplus
@@ -347,6 +349,7 @@ extern "C" {
 
   /* Windows specific functions */
 
+#if defined (WIN32NATIVE)
   #define LIBUSB_HAS_INSTALL_SERVICE_NP 1
   int usb_install_service_np(void);
   void CALLBACK usb_install_service_np_rundll(HWND wnd, HINSTANCE instance,
@@ -366,6 +369,7 @@ extern "C" {
   int usb_touch_inf_file_np(const char *inf_file);
   void CALLBACK usb_touch_inf_file_np_rundll(HWND wnd, HINSTANCE instance,
                                              LPSTR cmd_line, int cmd_show);
+#endif // WIN32NATIVE
 
   #define LIBUSB_HAS_INSTALL_NEEDS_RESTART_NP 1
   int usb_install_needs_restart_np(void);

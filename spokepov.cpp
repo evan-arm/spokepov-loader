@@ -1,6 +1,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <wx/app.h>
+#include <wx/button.h>
 #include <wx/frame.h>
 #include <wx/log.h>
 #include <wx/debug.h>
@@ -14,10 +15,12 @@
 #include <wx/statbmp.h>
 #include <wx/progdlg.h>
 #include <wx/numdlg.h>
+#include <wx/notebook.h>
 #include <wx/choice.h>
 #include <wx/dir.h>
 #include <wx/notebook.h>
 #include <wx/button.h>
+#include <wx/string.h>
 
 #include "spokepov.h"
 #include "imagemessagebox.h"
@@ -256,7 +259,7 @@ SpokePOVFrame::SpokePOVFrame(const wxString &title)
 	int i = 0;
 	while ((file = readdir(dir)) != NULL) {
 		wxString filename(file->d_name);
-		if (filename.StartsWith("cu.")) {
+		if (filename.StartsWith("cu.") || filename.StartsWith("ttyS")) {
 			filename = "/dev/"+filename;
 			portMenuS->Append(ID_PORT_SERIAL+i, filename, filename, wxITEM_RADIO);
 			i++;

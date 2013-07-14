@@ -1,0 +1,96 @@
+# SpokePOV Makefile for Linux.
+#
+# Usage:
+#
+# cd wxsoft
+# make -f Makefile.linux
+# ./spokepov
+#
+# Necessary packages:
+#
+# libusb from http://libusb.sourceforge.net/
+# wxGTK from http://www.wxwidgets.org/
+# libgtk from http://www.gtk.org/
+#
+# wxGTK *must* be built with these configure flags:
+# ./configure --disable-gtk2 --disable-unicode --enable-monolithic
+#
+# The default Debian distribution of libgtk-dev, at least, is not configured
+# this way - it is build with --enable-unicode, which will break compilation of
+# SpokePOV.
+#
+# Also, make sure wxGTK and libusb are in your LD_LIBRARY_PATH:
+#
+# export LD_LIBRARY_PATH=/usr/local/lib
+#
+# Status:
+#  - Read / Write / Verify over serial tested and works.
+#  - USB and parallel untested.
+#  - Import from BMP tested and works.
+#  - "Test Port" *does not* work.
+#  - Setting Comm delay does not appear to make a difference in speed.
+#  - There is a bug where the 'Port' sub-menu will appear several times.
+
+
+srcdir = ..
+LDFLAGS_GUI = `wx-config --libs` 
+CXX = g++
+CXXFLAGS = -ggdb -O0 -Wall -Wundef -Wno-ctor-dtor-privacy
+CPPFLAGS = `wx-config --cxxflags`
+LDFLAGS =  -L. -lusb 
+TOOLKIT = GTK
+
+EXTRALIBS =  `wx-config --libs` -lusb
+
+### Variables: ###
+
+SPOKEPOV_CXXFLAGS = -D__WX$(TOOLKIT)__ \
+        -I$(srcdir) $(CPPFLAGS) $(CXXFLAGS)
+SPOKEPOV_OBJECTS =  \
+        spokepov.o wheelpanel.o serbb_posix.o communication.o imagemessagebox.o
+
+
+### Targets: ###
+
+all: spokepov$(EXEEXT) data
+
+install: all
+
+uninstall: 
+
+install-strip: install
+
+clean: 
+	rm -rf ./.deps ./.pch
+	rm -f ./*.o
+	rm -f spokepov$(EXEEXT)
+	rm -rf spokepov.app
+
+distclean: clean
+	rm -f config.cache config.log config.status bk-deps bk-make-pch shared-ld-sh Makefile
+
+spokepov$(EXEEXT): $(SPOKEPOV_OBJECTS)
+	$(CXX) -o $@ $(SPOKEPOV_OBJECTS) $(LDFLAGS)  $(LDFLAGS_GUI) $(SAMPLES_RPATH_FLAG)  $(__WXLIB_MEDIA_p)  $(__WXLIB_ADV_p) $(PLUGIN_ADV_EXTRALIBS) $(__WXLIB_CORE_p)  $(__WXLIB_BASE_p)  $(__WXLIB_MONO_p) $(__LIB_TIFF_p) $(__LIB_JPEG_p) $(__LIB_PNG_p) $(__LIB_ZLIB_p) $(__LIB_ODBC_p) $(__LIB_REGEX_p) $(__LIB_EXPAT_p) $(EXTRALIBS_FOR_BASE) $(EXTRALIBS_FOR_GUI)
+	$(SAMPLES_RPATH_POSTLINK)
+
+data: 
+	@mkdir -p .
+	@for f in ; do \
+	if test ! -f ./$$f -a ! -d ./$$f ; \
+	then x=yep ; \
+	else x=`find $(srcdir)/$$f -newer ./$$f -print` ; \
+	fi; \
+	case "$$x" in ?*) \
+	cp -pRf $(srcdir)/$$f . ;; \
+	esac; \
+	done
+
+
+%.o: $(srcdir)/%.cpp
+	$(CXXC) -c -o $@ $(SPOKEPOV_CXXFLAGS) $<
+
+
+# Include dependency info, if present:
+-include .deps/*.d
+
+.PHONY: all install uninstall clean distclean spokepov_bundle data
