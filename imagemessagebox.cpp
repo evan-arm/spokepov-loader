@@ -55,7 +55,7 @@ ImageMessageBox::ImageMessageBox(wxWindow *parent, wxString title,
     } else {
       wxStaticText *message = new wxStaticText(this, wxID_ANY, text);
       dlgsizer->Add(message, 0, wxEXPAND|wxALIGN_LEFT|wxLEFT|wxRIGHT, 10);
-      text = "";
+      text = wxT("");
     }
   }
 

@@ -8,18 +8,18 @@
 #include "usb.h"
 
 SpokePOVComm *CommFactory(wxString type, wxString port) {
-  if (type.IsSameAs("serial"))
+  if (type.IsSameAs(wxT("serial")))
     return new SerialComm(port);
 
 #if defined(WIN32NATIVE)	
-  if (type.IsSameAs("parallel"))
+  if (type.IsSameAs(wxT("parallel")))
     return new ParallelComm(port);
 #endif
 
-  if (type.IsSameAs("usb"))
+  if (type.IsSameAs(wxT("usb")))
     return new USBComm();
 
-  wxLogMessage("Unknown port type "+type);
+  wxLogMessage(wxT("Unknown port type ")+type);
   return NULL;
 }
 
@@ -49,7 +49,7 @@ bool SpokePOVComm::readbyte(unsigned int addr, unsigned char *byte) {
   spi_xfer((addr >> 8) & 0xFF);
   spi_xfer(addr & 0xFF);
   if (!spi_get(byte) || !spi_get(&ret) || (ret != 0x80)) {
-    wxLogDebug("failed %02x", ret);
+    wxLogDebug(wxT("failed %02x"), ret);
     return false;
   }
   //wxLogDebug("read 0x%2x", *byte); 

@@ -36,21 +36,21 @@ WheelPanel::WheelPanel(wxWindow *parent, wxPanel *ctl, int num_leds, int hub_siz
       model[i][j] = false;
   }
 
-  savedname = wxString("");
+  savedname = wxString(wxT(""));
   controlsizer = new wxBoxSizer(wxHORIZONTAL);
   controlpanel->SetSizer(controlsizer);
   //controlsizer->SetSizeHints(this);
-  Read = new wxButton(controlpanel, BUTTON_ID_READ, "Read from SpokePOV");
+  Read = new wxButton(controlpanel, BUTTON_ID_READ, wxT("Read from SpokePOV"));
   Read->Hide();
-  Write = new wxButton(controlpanel, BUTTON_ID_WRITE, "Write to SpokePOV");
+  Write = new wxButton(controlpanel, BUTTON_ID_WRITE, wxT("Write to SpokePOV"));
   Write->Hide();
-  Verify = new wxButton(controlpanel, BUTTON_ID_VERIFY, "Verify SpokePOV")
+  Verify = new wxButton(controlpanel, BUTTON_ID_VERIFY, wxT("Verify SpokePOV"))
 ;
   Verify->Hide();
 
-  Done = new wxButton(controlpanel, BUTTON_ID_DONE, "Done adjusting import image");
+  Done = new wxButton(controlpanel, BUTTON_ID_DONE, wxT("Done adjusting import image"));
   Done->Hide();
-  Donetext = new wxStaticText(controlpanel, wxID_ANY, "You can now resize (drag the corner boxes) or move (use the 'hand' tool) the image around, when you're done, click here: ");
+  Donetext = new wxStaticText(controlpanel, wxID_ANY, wxT("You can now resize (drag the corner boxes) or move (use the 'hand' tool) the image around, when you're done, click here: "));
   Donetext->Hide();
 
   controlsizer->Add(Read, 1, wxEXPAND|wxALL|wxALIGN_LEFT|wxFIXED_MINSIZE, 15); 
@@ -138,32 +138,32 @@ bool WheelPanel::LoadModel(wxString name) {
     wxDataInputStream *dis = new wxDataInputStream(*fis);
     int len = dis->Read32();
     if (len != 8) {
-      wxMessageBox("Not a valid SpokePOV file!", "Invalid file", wxICON_HAND|wxOK);
+      wxMessageBox(wxT("Not a valid SpokePOV file!"), wxT("Invalid file"), wxICON_HAND|wxOK);
       return false;
     }
     fis->SeekI(0);
     dis = new wxDataInputStream(*fis);
-    if (dis->ReadString() != "SpokePOV") { // identifier
-      wxMessageBox("Not a valid SpokePOV file!", "Invalid file", wxICON_HAND|wxOK);
+    if (dis->ReadString() != wxT("SpokePOV")) { // identifier
+      wxMessageBox(wxT("Not a valid SpokePOV file!"), wxT("Invalid file"), wxICON_HAND|wxOK);
       return false;
     }
     int maj=dis->Read8();
     int min=dis->Read8();
     if ((maj != 1) &&
 	(min != 2)) {
-      wxMessageBox(wxString::Format("Found a file with version \"%d.%d\" which is not supported!", maj, min), "Wrong version",wxICON_HAND|wxOK);
+      wxMessageBox(wxString::Format(wxT("Found a file with version \"%d.%d\" which is not supported!"), maj, min), wxT("Wrong version"),wxICON_HAND|wxOK);
       return false;
     }
     
     int leds = dis->Read8(); // basically the size
     if (leds != num_leds) {
-      wxMessageBox(wxString::Format("This file has %d linear pixels (LEDs), while this SpokePOV only supports %d leds", leds, num_leds), "File mismatch", wxICON_HAND|wxOK );
+      wxMessageBox(wxString::Format(wxT("This file has %d linear pixels (LEDs), while this SpokePOV only supports %d leds"), leds, num_leds), wxT("File mismatch"), wxICON_HAND|wxOK );
       return false;
     }
 
     int pix = dis->Read16();
     if (pix != ROWS_PER_WHEEL) {
-      wxMessageBox(wxString::Format("This file has %d radial pixels, while this SpokePOV only supports %d pixels", pix, ROWS_PER_WHEEL), "File mismatch", wxICON_HAND|wxOK);
+      wxMessageBox(wxString::Format(wxT("This file has %d radial pixels, while this SpokePOV only supports %d pixels"), pix, ROWS_PER_WHEEL), wxT("File mismatch"), wxICON_HAND|wxOK);
       return false;
     }
 
@@ -213,7 +213,7 @@ bool WheelPanel::SaveModel(void) {
   if (fos->IsOk()) {
     wxDataOutputStream *dos = new wxDataOutputStream(*fos);
 
-    dos->WriteString("SpokePOV"); // identifier
+    dos->WriteString(wxT("SpokePOV")); // identifier
 
     dos->Write8(1); // version 1.2
     dos->Write8(2);
@@ -414,14 +414,14 @@ void WheelPanel::OnLeftDown(wxMouseEvent &event) {
 	       (pos.y > currimgpos.y+currimg.GetHeight()-10) && 
 	       (pos.y < currimgpos.y+currimg.GetHeight())) {
       // in the south east corner
-      wxLogDebug("Resizing SE");
+      wxLogDebug(wxT("Resizing SE"));
       drawstate = IMAGERESIZE_SE;
       imageresizepos = pos;
       lastsize = wxSize(currimg.GetWidth(), currimg.GetHeight());
     } else if  ((pos.x >= currimgpos.x) && (pos.x < currimgpos.x+10) &&
 		(pos.y >= currimgpos.y) && (pos.y < currimgpos.y+10)) {
       // north west
-      wxLogDebug("Resizing NW");
+      wxLogDebug(wxT("Resizing NW"));
       drawstate = IMAGERESIZE_NW;
       origimgpos = currimgpos;
       imagemovepos = imageresizepos = pos;
@@ -430,7 +430,7 @@ void WheelPanel::OnLeftDown(wxMouseEvent &event) {
 	       (pos.x < currimgpos.x+currimg.GetWidth()) &&
 	       (pos.y >= currimgpos.y) && (pos.y < currimgpos.y+10)) {
       // north east
-      wxLogDebug("Resizing NE");
+      wxLogDebug(wxT("Resizing NE"));
       drawstate = IMAGERESIZE_NE;
       origimgpos = currimgpos;
       imagemovepos = imageresizepos = pos;
@@ -439,7 +439,7 @@ void WheelPanel::OnLeftDown(wxMouseEvent &event) {
 	       (pos.y > currimgpos.y+currimg.GetHeight()-10) && 
 	       (pos.y < currimgpos.y+currimg.GetHeight())) {
       // south west
-      wxLogDebug("Resizing SW");
+      wxLogDebug(wxT("Resizing SW"));
       drawstate = IMAGERESIZE_SW;
       origimgpos = currimgpos;
       imagemovepos = imageresizepos = pos;
