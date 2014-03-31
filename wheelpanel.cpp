@@ -196,7 +196,7 @@ bool WheelPanel::ImportBMP(wxString name) {
   origimg = new wxImage();
   if (! origimg->LoadFile(name))
     return false;
-  wxLogDebug("%d %d", origimg->GetWidth(), origimg->GetHeight());
+  wxLogDebug(wxT("%d %d"), origimg->GetWidth(), origimg->GetHeight());
   origimg->ConvertToMono(0,0,0);
   currimgpos = wxPoint(0,0);
   currimg = origimg->Copy();

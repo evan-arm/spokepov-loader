@@ -70,7 +70,7 @@ bool SpokePOVComm::read16byte(unsigned int addr, unsigned char *buff) {
     //wxLogDebug("read 0x%02x", buff[i]); 
   }
   if (!spi_get(&ret) || (ret != 0x80)) {
-    wxLogDebug("failed %02x", ret);
+    wxLogDebug(wxT("failed %02x"), ret);
     return false;
   }
   return true;
@@ -85,7 +85,7 @@ bool SpokePOVComm::write16byte(unsigned int addr, unsigned char *data) {
   for (int i=0; i<16; i++)
     spi_xfer(*(data+i));
   if (!spi_get(&ret) || (ret != 0x80)) {
-    wxLogDebug("failed %02x", ret);
+    wxLogDebug(wxT("failed %02x"), ret);
     return false;
   }
   return true;
@@ -99,7 +99,7 @@ bool SpokePOVComm::writebyte(unsigned int addr, unsigned char data) {
   spi_xfer(addr & 0xFF);
   spi_xfer(data);
   if (!spi_get(&ret) || (ret != 0x80)) {
-    wxLogDebug("failed %02x", ret);
+    wxLogDebug(wxT("failed %02x"), ret);
     return false;
   }
   return true;
@@ -148,24 +148,33 @@ bool SpokePOVComm::spi_get(unsigned char *c) {
 USBComm::USBComm(void) {
   // from USBtiny
   struct usb_bus*	bus;
-  struct usb_device*	dev = 0;
 
   usb_handle = 0;
 
   this->type = USB;
+
   usb_init();
-  usb_find_busses();
-  usb_find_devices();
-  for	( bus = usb_busses; bus; bus = bus->next ) {
+  int bus_ct = usb_find_busses();
+  int dev_ct = usb_find_devices();
+
+  bus = usb_get_busses();
+
+  wxLogDebug(wxT("libusb found %d busses, %d devices"), bus_ct, dev_ct);
+  for ( ; bus; bus = bus->next ) {
+    struct usb_device *dev;
+    wxLogDebug(wxT("USB Bus %s"), bus->dirname);
     for	( dev = bus->devices; dev; dev = dev->next ) {
+      wxLogDebug(wxT(" -- USB Device %04x:%04x"),
+                  dev->descriptor.idVendor, dev->descriptor.idProduct);
+
       if (dev->descriptor.idVendor == USBDEV_VENDOR
 	  && dev->descriptor.idProduct == USBDEV_PRODUCT) {
 	usb_handle = usb_open( dev );
 	if ( ! usb_handle ) {
-	    wxLogDebug("Cannot open USB device: %s\n", usb_strerror() );
+	    wxLogDebug(wxT("Cannot open USB device: %s\n"), usb_strerror() );
 	    return;
 	}
-	wxLogDebug("Found device!");
+	wxLogDebug(wxT("Found device!"));
 	usb_control( USBTINY_POWERUP, (delay > 250) ? 250 : delay, RESET_HIGH );
 
  
@@ -173,7 +182,7 @@ USBComm::USBComm(void) {
       }
     }
   }
-  wxLogDebug("Could not find USB device 0x%x/0x%x\n", 
+  wxLogDebug(wxT("Could not find USB device %04x:%04x\n"), 
 	     USBDEV_VENDOR, USBDEV_PRODUCT );
 }
 
@@ -185,7 +194,7 @@ USBComm::~USBComm(void) {
   usb_control( USBTINY_POWERDOWN, 0, 0 );
   usb_close( usb_handle );
   usb_handle = NULL;
-  wxLogDebug("closed");
+  wxLogDebug(wxT("closed"));
 }
 
 
@@ -202,7 +211,7 @@ bool USBComm::usbspi_get(unsigned char *c) {
 
   ret = usb_in(USBTINY_SPI1, 0, 0, buffer, 1, 200);
   if (ret < 0) {
-    wxLogDebug("Unable to send vendor request, ret = %d...\n", ret);
+    wxLogDebug(wxT("Unable to send vendor request, ret = %d...\n"), ret);
     return false;
   } 
   c[0] = buffer[0];
@@ -215,7 +224,7 @@ bool USBComm::usbspi_xfer(unsigned char c) {
 
   ret = usb_in(USBTINY_SPI1, c, 0, buffer, 1, 200);
   if (ret < 0) {
-    wxLogDebug("Unable to send vendor request, ret = %d...\n", ret);
+    wxLogDebug(wxT("Unable to send vendor request, ret = %d...\n"), ret);
     return false;
   } 
   return true;
@@ -300,9 +309,9 @@ SerialComm::SerialComm(wxString port) {
   if (fd > 0)
     serbb_close(fd);
   fd = serbb_open((char *)port.char_str());
-    wxLogDebug("got fd = 0x%x", fd);
+    wxLogDebug(wxT("got fd = 0x%x"), fd);
   if (fd < 0)
-      wxLogDebug("Failed to open port: %s", (char *)port.char_str());
+      wxLogDebug(wxT("Failed to open port: %s"), (char *)port.char_str());
 
 }
 
@@ -354,7 +363,7 @@ ParallelComm::ParallelComm(wxString port) {
   this->type = PARALLEL;
   fd = ppi_open((char *)port.c_str());
   if (fd < 0)
-    wxLogDebug("Failed to open port! "+port);
+    wxLogDebug(wxT("Failed to open port! ")+port);
 
   delay = 1000;
 }

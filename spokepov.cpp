@@ -56,7 +56,7 @@ IMPLEMENT_APP(SpokePOV_App)
 
 bool SpokePOV_App::OnInit()
 {
-  wxLogDebug("hi");
+  wxLogDebug(wxT("hi"));
 
   this->_exit = false;
 
@@ -113,7 +113,7 @@ SpokePOVFrame::SpokePOVFrame(const wxString &title)
     else
       num_leds = 30;
   }
-  wxLogDebug("Config: %d LEDs", num_leds);
+  wxLogDebug(wxT("Config: %d LEDs"), num_leds);
   SetConfigValue(wxT("num_leds"), wxString::Format(wxT("%d"),num_leds));
   
   key = GetConfigValue(wxT("hub_size"));
@@ -126,7 +126,7 @@ SpokePOVFrame::SpokePOVFrame(const wxString &title)
     else
       hub_size = 5;
   }
-  wxLogDebug("Config: %d\" hub", hub_size);
+  wxLogDebug(wxT("Config: %d\" hub"), hub_size);
   SetConfigValue(wxT("hub_size"), wxString::Format(wxT("%d"),hub_size));
 
   
@@ -140,7 +140,7 @@ SpokePOVFrame::SpokePOVFrame(const wxString &title)
     else
       comm_delay = 500;
   }
-  wxLogDebug("Delay: %d\" us", comm_delay);
+  wxLogDebug(wxT("Delay: %d\" us"), comm_delay);
   SetConfigValue(wxT("comm_delay"), wxString::Format(wxT("%d"),comm_delay));
 
   key = GetConfigValue(wxT("commlink"));
@@ -149,20 +149,20 @@ SpokePOVFrame::SpokePOVFrame(const wxString &title)
     commlink = wxT("parallel");
   } else if ((key->IsSameAs("parallel")) || (key->IsSameAs("serial")) || (key->IsSameAs("usb"))) {
     commlink = wxString(*key);
-    wxLogDebug("Config: %s", commlink.c_str());
+    wxLogDebug(wxT("Config: %s", commlink.c_str());
   } else {
     commlink = wxT("parallel");
-    wxLogDebug("Config: assuming parallel");
+    wxLogDebug(wxT("Config: assuming parallel"));
   }
 #else
   if (key == NULL)  {
     commlink = wxT("serial");
   } else if (key->IsSameAs(wxT("serial")) || key->IsSameAs(wxT("usb"))) {
     commlink = wxString(*key);
-    wxLogDebug("Config: %s", commlink.c_str());
+    wxLogDebug(wxT("Config: %s"), commlink.c_str());
   } else {
     commlink = wxT("serial");
-    wxLogDebug("Config: assuming serial");
+    wxLogDebug(wxT("Config: assuming serial"));
   }
 #endif
 
@@ -175,10 +175,10 @@ SpokePOVFrame::SpokePOVFrame(const wxString &title)
 #else
 	commport_serial = wxFindFirstFile(wxT("/dev/cu.*"));
 #endif
-    wxLogDebug("Config: undef. port, will choose first available");
+    wxLogDebug(wxT("Config: undef. port, will choose first available"));
   } else {
     commport_serial = *key;
-    wxLogDebug("Config serial port"+commport_serial);
+    wxLogDebug(wxT("Config serial port")+commport_serial);
   }
   SetConfigValue(wxT("commport_serial"), commport_serial);
 
@@ -186,10 +186,10 @@ SpokePOVFrame::SpokePOVFrame(const wxString &title)
   key = GetConfigValue(wxT("commport_parallel"));
   if (key == NULL) {
     commport_parallel = "lpt1";
-    wxLogDebug("Config: undef. port, will choose first available");
+    wxLogDebug(wxT("Config: undef. port, will choose first available"));
   } else {
     commport_parallel = wxT(*key);
-    wxLogDebug("Config parr port"+commport_parallel);
+    wxLogDebug(wxT("Config parr port")+commport_parallel);
   }
   SetConfigValue(wxT("commport_parallel"), commport_parallel);
 #endif
@@ -245,7 +245,7 @@ SpokePOVFrame::SpokePOVFrame(const wxString &title)
     portMenuS->Append(ID_PORT_SERIAL+com-1, name, name, wxITEM_RADIO);
   }
 #else
-	wxLogDebug("Finding serial ports");
+	wxLogDebug(wxT("Finding serial ports"));
 	wxArrayString files;
 	/*
 	// good fucking god, wxdir doesnt support devfs...
@@ -255,7 +255,7 @@ SpokePOVFrame::SpokePOVFrame(const wxString &title)
 	// i hate it but no choice
 	DIR *dir = opendir("/dev");
 	struct dirent *file;
-	wxLogDebug("reading /dev");
+	wxLogDebug(wxT("reading /dev"));
 	int i = 0;
 	while ((file = readdir(dir)) != NULL) {
 		wxString filename(file->d_name, wxConvUTF8);
@@ -383,7 +383,7 @@ void SpokePOVFrame::Save(int currbank, wxString filename) {
 				     wxSAVE);        // save a file
 
     if (filedialog->ShowModal() == wxID_CANCEL) {
-      wxLogDebug("Canceled");
+      wxLogDebug(wxT("Canceled"));
       return; // canceled, bail
     }
 
@@ -407,7 +407,7 @@ void SpokePOVFrame::OnOpen(wxCommandEvent &evt) {
 					      wxOPEN);        // save a file
   
   if (filedialog->ShowModal() == wxID_CANCEL) {
-    wxLogDebug("Canceled");
+    wxLogDebug(wxT("Canceled"));
     return; // canceled, bail
   }
 
@@ -429,7 +429,7 @@ void SpokePOVFrame::OnImport(wxCommandEvent &evt) {
 					      wxT("BMP file (*.bmp)|*.bmp"), 
 					      wxOPEN);  
   if (filedialog->ShowModal() == wxID_CANCEL) {
-    wxLogDebug("Canceled");
+    wxLogDebug(wxT("Canceled"));
     return; // canceled, bail
   }
 
@@ -588,14 +588,14 @@ int SpokePOVFrame::Connect(void) {
       banks = 1<<j; // yes!
       break;
     } else {
-      wxLogDebug("0x%02x 0x%02x", ret, (unsigned char)~byte[0]);
+      wxLogDebug(wxT("0x%02x 0x%02x"), ret, (unsigned char)~byte[0]);
     }
     if (!comm->writebyte(0, byte[0])) {
       return -1;
     }
   }
 
-  wxLogDebug("found %d banks of memory", banks);
+  wxLogDebug(wxT("found %d banks of memory"), banks);
 
   wxSize foo = GetSize();
 
@@ -634,7 +634,7 @@ void SpokePOVFrame::OnTestPort(wxCommandEvent &evt) {
   wxString commport;
  
 
-  wxLogDebug("Testing");
+  wxLogDebug(wxT("Testing"));
   if (commlink == wxT("serial"))
     commport = commport_serial;
   else if (commlink == wxT("usb"))
@@ -828,7 +828,7 @@ void SpokePOVFrame::OnTestPort(wxCommandEvent &evt) {
 }
 
 void SpokePOVFrame::OnButtonDone(wxCommandEvent &evt) {
-  wxLogDebug("Done");
+  wxLogDebug(wxT("Done"));
   // get the current page...
 
   int currbank = notebook->GetSelection();
@@ -936,13 +936,13 @@ void SpokePOVFrame::OnSerialPortChange(wxCommandEvent &evt) {
     if (portMenuS->FindItemByPosition(i)->IsChecked())
       commport_serial = portMenuS->FindItemByPosition(i)->GetText();
   SetConfigValue(wxT("commport_serial"), commport_serial);
-  wxLogDebug("new serial port: "+commport_serial);
+  wxLogDebug(wxT("new serial port: ")+commport_serial);
   SaveConfiguration();
 }
 
 void SpokePOVFrame::OnButtonWrite(wxCommandEvent &evt) {
   unsigned char buff[1024];
-  wxLogDebug("Write");
+  wxLogDebug(wxT("Write"));
  // which bank?
   int currbank = notebook->GetSelection();
 
@@ -962,7 +962,7 @@ void SpokePOVFrame::OnButtonWrite(wxCommandEvent &evt) {
 }
 void SpokePOVFrame::OnButtonRead(wxCommandEvent &evt) {
   unsigned char buff[1024];
-  wxLogDebug("Read");
+  wxLogDebug(wxT("Read"));
 
   // which bank?
   int currbank = notebook->GetSelection();
@@ -982,7 +982,7 @@ void SpokePOVFrame::OnButtonRead(wxCommandEvent &evt) {
 
 void SpokePOVFrame::OnButtonVerify(wxCommandEvent &evt) {
   unsigned char buff[1024], minibuff[16];
-  wxLogDebug("Verify");
+  wxLogDebug(wxT("Verify"));
 
   // which bank?
   int currbank = notebook->GetSelection();
