@@ -5,7 +5,7 @@
 #include "communication.h"
 #include "ppi.h"
 #include "serbb.h"
-#include "usb.h"
+#include <usb.h>
 
 SpokePOVComm *CommFactory(wxString type, wxString port) {
   if (type.IsSameAs(wxT("serial")))
